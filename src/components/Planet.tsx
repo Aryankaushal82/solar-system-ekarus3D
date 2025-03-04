@@ -1,100 +1,85 @@
-import React, { useRef } from 'react';
+
+
+import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, useTexture } from '@react-three/drei';
+import { Sphere, Line } from '@react-three/drei';
 import * as THREE from 'three';
-import { PlanetConfig, MoonConfig } from '../types';
+import { PlanetConfig } from '../types';
 
 interface PlanetProps {
   planet: PlanetConfig;
-  time: number;
+  globalSpeed: number;
 }
 
-interface MoonProps {
-  moon: MoonConfig;
-  time: number;
-  planetRadius: number;
-}
-
-const Moon: React.FC<MoonProps> = ({ moon, time, planetRadius }) => {
-  const moonRef = useRef<THREE.Mesh>(null);
-  
-  useFrame(() => {
-    if (moonRef.current) {
-      const angle = time * moon.speed * 0.1;
-      moonRef.current.position.x = Math.cos(angle) * moon.distance;
-      moonRef.current.position.z = Math.sin(angle) * moon.distance;
-      moonRef.current.rotation.y += 0.01;
-    }
-  });
-
-  return (
-    <Sphere ref={moonRef} args={[moon.radius * 0.1, 32, 32]}>
-      <meshStandardMaterial color={moon.color} />
-    </Sphere>
-  );
-};
-
-const Planet: React.FC<PlanetProps> = ({ planet, time }) => {
+const Planet: React.FC<PlanetProps> = ({ planet, globalSpeed }) => {
   const planetRef = useRef<THREE.Mesh>(null);
-  const orbitRef = useRef<THREE.Line>(null);
-  
-  // Load texture if available
-  const texture = planet.texture ? useTexture(planet.texture) : null;
-  
-  // Create orbit path
-  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(
-    new Array(64).fill(0).map((_, i) => {
-      const angle = (i / 64) * Math.PI * 2;
-      return new THREE.Vector3(
-        Math.cos(angle) * planet.distance,
-        0,
-        Math.sin(angle) * planet.distance
-      );
-    })
-  );
+  const orbitRef = useRef<THREE.Group>(null);
 
-  useFrame(() => {
-    if (planetRef.current && planet.id !== 'sun') {
-      // Update planet position based on time and speed
-      const angle = time * planet.speed * 0.05;
-      planetRef.current.position.x = Math.cos(angle) * planet.distance;
-      planetRef.current.position.z = Math.sin(angle) * planet.distance;
-      
-      // Rotate planet
-      planetRef.current.rotation.y += 0.01;
+  // Memoize orbit points for performance
+  const orbitPoints = useMemo(() => {
+    const points: THREE.Vector3[] = [];
+    const segments = 100;
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2;
+      points.push(
+        new THREE.Vector3(
+          Math.cos(angle) * planet.distance, 
+          0, 
+          Math.sin(angle) * planet.distance
+        )
+      );
+    }
+    return points;
+  }, [planet.distance]);
+
+  useFrame((_, delta) => {
+    if (orbitRef.current && planet.id !== 'sun') {
+      // Adjust rotation based on global speed and planet's individual speed
+      const rotationSpeed = planet.speed * globalSpeed * 0.5;
+      orbitRef.current.rotation.y += rotationSpeed * delta;
+
+      // Add self-rotation for the planet
+      if (planetRef.current) {
+        planetRef.current.rotation.y += 0.005;
+      }
     }
   });
 
+  // Skip rendering for sun
+  if (planet.id === 'sun') {
+    return (
+      <Sphere args={[planet.radius, 64, 64]} position={[0, 0, 0]}>
+        <meshStandardMaterial 
+          color={planet.color} 
+          emissive={planet.color} 
+          emissiveIntensity={1.5} 
+        />
+      </Sphere>
+    );
+  }
+
   return (
-    <group>
-      {/* Orbit line */}
-      {planet.id !== 'sun' && (
-        <line ref={orbitRef}>
-          <bufferGeometry attach="geometry" {...orbitGeometry} />
-          <lineBasicMaterial attach="material" color="#666666" opacity={0.3} transparent />
-        </line>
-      )}
-      
+    <group ref={orbitRef}>
+      {/* Orbital Path */}
+      <Line 
+        points={orbitPoints}
+        color="white"
+        transparent
+        opacity={0.2}
+      />
+
       {/* Planet */}
       <Sphere 
-        ref={planetRef} 
-        args={[planet.radius, 32, 32]} 
-        position={planet.id === 'sun' ? [0, 0, 0] : [planet.distance, 0, 0]}
+        ref={planetRef}
+        args={[planet.radius, 64, 64]} 
+        position={[planet.distance, 0, 0]}
       >
         <meshStandardMaterial 
           color={planet.color} 
-          map={texture} 
-          emissive={planet.id === 'sun' ? planet.color : undefined}
-          emissiveIntensity={planet.id === 'sun' ? 0.5 : 0}
+          specular={0x111111} 
+          shininess={10} 
         />
       </Sphere>
-      
-      {/* Moons */}
-      {planet.hasMoons && planet.moons && planet.moons.map(moon => (
-        <group key={moon.id} position={planetRef.current ? planetRef.current.position : [planet.distance, 0, 0]}>
-          <Moon moon={moon} time={time} planetRadius={planet.radius} />
-        </group>
-      ))}
     </group>
   );
 };

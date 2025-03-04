@@ -1,15 +1,19 @@
 
+
+
 import { PlanetConfig } from '../types';
 
 export const defaultPlanets: PlanetConfig[] = [
   {
     id: 'sun',
     name: 'Sun',
-    radius: 5,
+    radius: 6,
     distance: 0,
     speed: 0,
     color: '#FDB813',
-    texture: '../../public/sun.jpg', 
+    texture: '/textures/sun.jpg',
+    emissive: '#FDB813',
+    emissiveIntensity: 2, 
   },
   {
     id: 'mercury',
@@ -18,7 +22,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 10,
     speed: 4.74,
     color: '#B7B8B9',
-    texture: '../../public/mercury.jpg',
+    texture: '/textures/mercury.jpg',
+    roughness: 1.0, 
   },
   {
     id: 'venus',
@@ -27,7 +32,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 15,
     speed: 3.5,
     color: '#E5E5E5',
-    texture: '../../public/venus.jpg',
+    texture: '/textures/venus.jpg',
+    roughness: 0.8,
   },
   {
     id: 'earth',
@@ -36,7 +42,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 20,
     speed: 2.98,
     color: '#0089FF',
-    texture: '../../public/earth.jpg',
+    texture: '/textures/earth.jpg',
+    roughness: 0.6,
     hasMoons: true,
     moons: [
       {
@@ -46,7 +53,8 @@ export const defaultPlanets: PlanetConfig[] = [
         distance: 2,
         speed: 5.4,
         color: '#E5E5E5',
-        texture: '../../public/moon.jpg',
+        texture: '/textures/moon.jpg',
+        roughness: 0.9,
       }
     ]
   },
@@ -57,7 +65,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 25,
     speed: 2.41,
     color: '#FF6B6B',
-    texture: '../../public/mars.jpg',
+    texture: '/textures/mars.jpg',
+    roughness: 0.7,
     hasMoons: true,
     moons: [
       {
@@ -67,7 +76,7 @@ export const defaultPlanets: PlanetConfig[] = [
         distance: 1.5,
         speed: 7.5,
         color: '#C0C0C0',
-        texture: '../../public/moon.jpg',
+        texture: '/textures/moon.jpg',
       },
       {
         id: 'deimos',
@@ -76,7 +85,7 @@ export const defaultPlanets: PlanetConfig[] = [
         distance: 2.5,
         speed: 6.5,
         color: '#C0C0C0',
-        texture: '../../public/moon.jpg',
+        texture: '/textures/moon.jpg',
       }
     ]
   },
@@ -87,7 +96,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 35,
     speed: 1.31,
     color: '#F5DEB3',
-    texture: '../../public/jupiter.jpg',
+    texture: '/textures/jupiter.jpg',
+    roughness: 0.4,
   },
   {
     id: 'saturn',
@@ -96,7 +106,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 45,
     speed: 0.97,
     color: '#F4A460',
-    texture: '../../public/jupiter.jpg',
+    texture: '/textures/saturn.jpg',
+    roughness: 0.5,
   },
   {
     id: 'uranus',
@@ -105,7 +116,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 55,
     speed: 0.68,
     color: '#ADD8E6',
-    texture: '../../public/uranus.jpg',
+    texture: '/textures/uranus.jpg',
+    roughness: 0.4,
   },
   {
     id: 'neptune',
@@ -114,7 +126,8 @@ export const defaultPlanets: PlanetConfig[] = [
     distance: 65,
     speed: 0.54,
     color: '#4169E1',
-    texture: '../../public/neptune.jpg',
+    texture: '/textures/neptune.jpg',
+    roughness: 0.3,
   },
 ];
 
