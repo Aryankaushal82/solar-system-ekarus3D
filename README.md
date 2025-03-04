@@ -2,6 +2,8 @@
 
 This project is a fully interactive 3D solar system web application built with React, Three.js, and Firebase Firestore. It allows users to visualize and interact with a realistic 3D model of our solar system, customize various parameters, and save/load configurations.
 
+Hosted link: https://solar-system-threejs-2025.netlify.app/
+
 ## Features
 
 - Realistic 3D solar system model with the Sun and 8 planets
